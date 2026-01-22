@@ -4,17 +4,22 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class MainPage {
 
     private WebDriver driver;
+    private WebDriverWait wait;
 
     // Локаторы элементов
-
     private By orderButtonTop = By.cssSelector(".Button_Button__ra12g"); // заказать вверху страницы
     private By orderButtonBottom = By.cssSelector(".Button_Button__ra12g.Button_Middle__1CSJM"); // заказать внизу страницы
     private By cookieConsent = By.className("App_CookieConsent__1yUIN"); // всплывающее окно с согласием на использование файлов cookie
-    // Локаторы элементов
+
+    // Локаторы элементов аккордеона
     private By accordionHeading1 = By.id("accordion__heading-0"); // первый вопрос
     private By accordionHeading2 = By.id("accordion__heading-1"); // второй вопрос
     private By accordionHeading3 = By.id("accordion__heading-2"); // третий вопрос
@@ -27,52 +32,40 @@ public class MainPage {
     // Конструктор
     public MainPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     // Методы взаимодействия с элементами
     public void clickAccordion(int questionNumber) {
+        By headingLocator = getAccordionHeadingByNumber(questionNumber);
+        scrollToElement(driver.findElement(headingLocator));
+        driver.findElement(headingLocator).click();
+    }
+
+    // Метод для получения элемента текста аккордеона с ожиданием его появления
+    public WebElement getAccordionText(int questionNumber) {
+        By textLocator = By.id("accordion__panel-" + (questionNumber - 1));
+        return wait.until(ExpectedConditions.presenceOfElementLocated(textLocator));
+    }
+
+    private By getAccordionHeadingByNumber(int questionNumber) {
         switch (questionNumber) {
-            case 1:
-                scrollToElement(driver.findElement(accordionHeading1));
-                driver.findElement(accordionHeading1).click();
-                break;
-            case 2:
-                scrollToElement(driver.findElement(accordionHeading2));
-                driver.findElement(accordionHeading2).click();
-                break;
-            case 3:
-                scrollToElement(driver.findElement(accordionHeading3));
-                driver.findElement(accordionHeading3).click();
-                break;
-            case 4:
-                scrollToElement(driver.findElement(accordionHeading4));
-                driver.findElement(accordionHeading4).click();
-                break;
-            case 5:
-                scrollToElement(driver.findElement(accordionHeading5));
-                driver.findElement(accordionHeading5).click();
-                break;
-            case 6:
-                scrollToElement(driver.findElement(accordionHeading6));
-                driver.findElement(accordionHeading6).click();
-                break;
-            case 7:
-                scrollToElement(driver.findElement(accordionHeading7));
-                driver.findElement(accordionHeading7).click();
-                break;
-            case 8:
-                scrollToElement(driver.findElement(accordionHeading8));
-                driver.findElement(accordionHeading8).click();
-                break;
+            case 1: return accordionHeading1;
+            case 2: return accordionHeading2;
+            case 3: return accordionHeading3;
+            case 4: return accordionHeading4;
+            case 5: return accordionHeading5;
+            case 6: return accordionHeading6;
+            case 7: return accordionHeading7;
+            case 8: return accordionHeading8;
             default:
-                throw new IllegalArgumentException("Invalid question number");
+                throw new IllegalArgumentException("Invalid question number: " + questionNumber);
         }
     }
 
     private void scrollToElement(WebElement element) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
     }
-
 
     public void clickOrderButtonTop() {
         driver.findElement(orderButtonTop).click();

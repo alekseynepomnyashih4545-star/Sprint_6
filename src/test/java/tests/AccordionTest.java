@@ -1,35 +1,27 @@
 package tests;
 
+import factories.WebDriverFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.MainPage;
 
-import java.time.Duration;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AccordionTest {
 
     private WebDriver driver;
-    public MainPage mainPage;
+    private MainPage mainPage;
 
     @BeforeEach
     void setUp() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
-        driver = new ChromeDriver(options);
+        driver = WebDriverFactory.createDriver();
         driver.get("https://qa-scooter.praktikum-services.ru/");
         mainPage = new MainPage(driver);
     }
@@ -40,10 +32,8 @@ public class AccordionTest {
         // Нажимаем на стрелочку
         mainPage.clickAccordion(questionNumber);
 
-        // Ждём появление нужного текста
-        WebElement accordionText = driver.findElement(By.id("accordion__panel-" + (questionNumber - 1)));
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.textToBePresentInElement(accordionText, expectedText));
+        // Получаем элемент текста аккордеона с ожиданием его появления
+        WebElement accordionText = mainPage.getAccordionText(questionNumber);
 
         // Проверяем, что текст появился и совпадает точно
         String actualText = accordionText.getText().trim();
